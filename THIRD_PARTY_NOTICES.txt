@@ -1,0 +1,9 @@
+Tabler Icons 3.46.0
+Copyright (c) 2020-2026 Paweł Kuna
+Licensed under the MIT License.
+
+Source: https://tabler.io/icons
+License: https://github.com/tabler/tabler-icons/blob/main/LICENSE
+
+The complete license text is included at:
+licenses/TABLER-ICONS-LICENSE.txt

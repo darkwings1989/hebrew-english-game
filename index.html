@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#123b75" />
+    <meta name="description" content="משחק אינסופי ללימוד אותיות ומילים ראשונות באנגלית לילדי כיתה ב׳" />
+    <title>המסע הראשון שלי באנגלית</title>
+    <link id="game-stylesheet" rel="stylesheet" href="./styles.css" />
+    <script>
+      document.querySelector("#game-stylesheet").href = `./styles.css?v=${Date.now()}`;
+    </script>
+  </head>
+  <body>
+    <main class="app-shell">
+      <div class="sky-dot sky-dot-one" aria-hidden="true"></div>
+      <div class="sky-dot sky-dot-two" aria-hidden="true"></div>
+
+      <section class="game" aria-label="משחק ללימוד אנגלית">
+        <header class="topbar">
+          <div class="brand">
+            <span class="brand-mark" aria-hidden="true">
+              <img src="./assets/icons/alphabet-latin.svg" alt="" />
+            </span>
+            <div>
+              <p>מתחילים אנגלית מההתחלה</p>
+              <h1>המסע הראשון שלי באנגלית</h1>
+            </div>
+          </div>
+
+          <div class="score-area">
+            <div class="score-card" aria-label="ניקוד">
+              <img src="./assets/icons/trophy.svg" alt="" aria-hidden="true" />
+              <strong id="score">0</strong>
+              <span>נקודות</span>
+            </div>
+            <button id="reset-button" class="icon-button reset-button" type="button" aria-label="התחלה מחדש" title="התחלה מחדש">
+              <img src="./assets/icons/refresh.svg" alt="" aria-hidden="true" />
+            </button>
+          </div>
+        </header>
+
+        <nav id="stage-picker" class="stage-picker" aria-label="בחירת שלב לימוד"></nav>
+
+        <section class="lesson-card">
+          <div class="lesson-top">
+            <div>
+              <span id="stage-name" class="stage-name">אות גדולה וקטנה</span>
+              <p id="question-number">שאלה 1</p>
+            </div>
+            <div class="mini-stats">
+              <span><img src="./assets/icons/sparkles.svg" alt="" aria-hidden="true" /> רצף <strong id="streak">0</strong></span>
+              <span><img src="./assets/icons/star.svg" alt="" aria-hidden="true" /> כוכבים <strong id="stars">0</strong></span>
+            </div>
+          </div>
+
+          <div class="progress-row">
+            <span id="progress-label">עוד 10 תשובות לכוכב הבא</span>
+            <div class="progress-track" role="progressbar" aria-label="התקדמות לכוכב הבא" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+              <div id="progress-bar"></div>
+            </div>
+          </div>
+
+          <div class="question-zone">
+            <p id="instruction" class="instruction">איזו אות קטנה מתאימה לאות הגדולה?</p>
+
+            <div id="prompt" class="prompt" aria-live="polite"></div>
+
+            <button id="sound-button" class="sound-button" type="button" aria-label="השמעה באנגלית" title="השמעה באנגלית">
+              <img src="./assets/icons/volume.svg" alt="" aria-hidden="true" />
+              <span>לשמוע באנגלית</span>
+            </button>
+            <p id="speech-status" class="speech-status" role="status" hidden></p>
+          </div>
+
+          <div id="answers" class="answers" aria-label="אפשרויות תשובה"></div>
+
+          <div id="spelling-area" class="spelling-area" hidden>
+            <div id="built-word" class="built-word" dir="ltr" aria-label="המילה שנבנתה"></div>
+            <div id="letter-bank" class="letter-bank" dir="ltr" aria-label="אותיות לבחירה"></div>
+            <button id="erase-letter" class="erase-button" type="button">מחיקת האות האחרונה</button>
+          </div>
+
+          <div class="feedback-area" aria-live="polite">
+            <p id="feedback">בחרו תשובה</p>
+            <p id="explanation" class="explanation" hidden></p>
+          </div>
+
+          <button id="next-button" class="next-button" type="button" hidden>
+            לשאלה הבאה
+            <span aria-hidden="true">←</span>
+          </button>
+        </section>
+
+        <p class="footer-note">אפשר להמשיך ולתרגל כמה שרוצים. ההתקדמות נשמרת במכשיר.</p>
+      </section>
+    </main>
+
+    <script>
+      const cacheVersion = Date.now();
+      const dataScript = document.createElement("script");
+      dataScript.src = `./data.js?v=${cacheVersion}`;
+      dataScript.onload = () => {
+        const gameScript = document.createElement("script");
+        gameScript.src = `./script.js?v=${cacheVersion}`;
+        document.body.append(gameScript);
+      };
+      document.body.append(dataScript);
+    </script>
+  </body>
+</html>
