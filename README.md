@@ -15,6 +15,7 @@
 - שמירת ניקוד במכשיר ורצף נפרד לכל סוג תרגיל במהלך אותה לשונית
 
 כתובת המשחק: https://darkwings1989.github.io/hebrew-english-game/
+
 כתובת הכלי להוספת מילים חדשות למאגר המילים: https://darkwings1989.github.io/hebrew-english-game/admin.html
 
 דף הניהול אינו מופיע בתפריטי המשחק. בדף הזה:
