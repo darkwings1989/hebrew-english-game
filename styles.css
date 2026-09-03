@@ -27,6 +27,7 @@ html {
 
 body {
   margin: 0;
+  overflow-x: hidden;
   color: var(--navy);
   background: #0e376d;
   font-family: Arial, "Noto Sans Hebrew", sans-serif;
@@ -40,7 +41,6 @@ button {
 .app-shell {
   position: relative;
   min-height: 100svh;
-  overflow: hidden;
   padding: 24px 18px 28px;
   background:
     radial-gradient(circle at 9% 12%, rgba(255, 212, 59, 0.24), transparent 22%),
@@ -343,12 +343,7 @@ button {
   display: grid;
   justify-items: center;
   padding: 24px 0 17px;
-  scroll-margin-top: 16px;
   text-align: center;
-}
-
-.next-button {
-  scroll-margin-block: 24px;
 }
 
 .instruction {

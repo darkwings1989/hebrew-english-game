@@ -3,6 +3,7 @@
 const DATA = window.ENGLISH_GAME_DATA;
 const ICON_PATH = "./assets/icons/";
 const STORAGE_KEY = "english-first-quest-progress-v1";
+const STREAKS_SESSION_KEY = "english-first-quest-streaks-v1";
 const VOICE_WAIT_MS = 3000;
 const SPEECH_START_DELAY_MS = 120;
 const SPEECH_RESTART_DELAY_MS = 340;
@@ -40,7 +41,7 @@ const savedProgress = loadProgress();
 const state = {
   stageId: DATA.stages.some((stage) => stage.id === savedProgress.stageId) ? savedProgress.stageId : DATA.stages[0].id,
   score: savedProgress.score,
-  streaksByStage: Object.fromEntries(DATA.stages.map((stage) => [stage.id, 0])),
+  streaksByStage: loadSessionStreaks(),
   correctCount: savedProgress.correctCount,
   questionNumber: 1,
   question: null,
@@ -81,6 +82,34 @@ function saveProgress() {
   }
 }
 
+function emptyStageStreaks() {
+  return Object.fromEntries(DATA.stages.map((stage) => [stage.id, 0]));
+}
+
+function loadSessionStreaks() {
+  const streaks = emptyStageStreaks();
+  try {
+    const savedStreaks = JSON.parse(sessionStorage.getItem(STREAKS_SESSION_KEY));
+    if (!savedStreaks || typeof savedStreaks !== "object") return streaks;
+
+    DATA.stages.forEach((stage) => {
+      const value = savedStreaks[stage.id];
+      streaks[stage.id] = Number.isFinite(value) && value >= 0 ? value : 0;
+    });
+  } catch {
+    // A new tab starts with zero streaks, and the game still works if storage is blocked.
+  }
+  return streaks;
+}
+
+function saveSessionStreaks() {
+  try {
+    sessionStorage.setItem(STREAKS_SESSION_KEY, JSON.stringify(state.streaksByStage));
+  } catch {
+    // The game still works when session storage is disabled.
+  }
+}
+
 function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -112,6 +141,7 @@ function currentStreak() {
 
 function resetCurrentStreak() {
   state.streaksByStage[state.stageId] = 0;
+  saveSessionStreaks();
 }
 
 function uniqueChoices(correct, pool, total = 4) {
@@ -229,20 +259,22 @@ function resetQuestionState() {
   elements.speechStatus.hidden = true;
 }
 
-function scrollIntoViewIfNeeded(element, block = "center") {
+function scrollWindowToElement(element, position = "center", force = false) {
   window.requestAnimationFrame(() => {
     const rect = element.getBoundingClientRect();
     const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
     const edgePadding = 16;
-    const isOutsideViewport = rect.top < edgePadding || rect.bottom > viewportHeight - edgePadding;
-    if (!isOutsideViewport) return;
+    const isFullyVisible = rect.top >= edgePadding && rect.bottom <= viewportHeight - edgePadding;
+    if (!force && isFullyVisible) return;
 
-    const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    element.scrollIntoView({
-      behavior: reduceMotion ? "auto" : "smooth",
-      block,
-      inline: "nearest",
-    });
+    const elementTop = window.scrollY + rect.top;
+    const targetTop = position === "start"
+      ? elementTop - edgePadding
+      : elementTop + ((rect.bottom - rect.top) / 2) - (viewportHeight / 2);
+
+    // A single immediate window scroll avoids long smooth-scroll animations
+    // and does not turn the question card into a nested scroll target.
+    window.scrollTo({ top: Math.max(0, targetTop), behavior: "auto" });
   });
 }
 
@@ -250,10 +282,11 @@ function startQuestion(scrollToQuestion = false) {
   resetQuestionState();
   state.question = createQuestion();
   render();
-  if (scrollToQuestion) scrollIntoViewIfNeeded(elements.questionZone, "start");
+  if (scrollToQuestion) scrollWindowToElement(elements.questionZone, "start", true);
 }
 
 function nextQuestion() {
+  elements.next.blur?.();
   state.questionNumber += 1;
   startQuestion(true);
 }
@@ -263,6 +296,7 @@ function finishCorrect() {
   state.score += state.attempts === 0 ? 10 : 5;
   state.streaksByStage[state.stageId] = currentStreak() + 1;
   state.correctCount += 1;
+  saveSessionStreaks();
   saveProgress();
 }
 
@@ -284,7 +318,7 @@ function chooseAnswer(value) {
     if (state.attempts >= 2) finishWrong();
   }
   render();
-  if (state.complete) scrollIntoViewIfNeeded(elements.next, "center");
+  if (state.complete) scrollWindowToElement(elements.next, "center");
 }
 
 function chooseLetter(letter, index) {
@@ -308,7 +342,7 @@ function chooseLetter(letter, index) {
     }
   }
   render();
-  if (state.complete) scrollIntoViewIfNeeded(elements.next, "center");
+  if (state.complete) scrollWindowToElement(elements.next, "center");
 }
 
 function eraseLastLetter() {
@@ -591,9 +625,10 @@ elements.next.addEventListener("click", nextQuestion);
 elements.eraseLetter.addEventListener("click", eraseLastLetter);
 elements.reset.addEventListener("click", () => {
   state.score = 0;
-  state.streaksByStage = Object.fromEntries(DATA.stages.map((stage) => [stage.id, 0]));
+  state.streaksByStage = emptyStageStreaks();
   state.correctCount = 0;
   state.questionNumber = 1;
+  saveSessionStreaks();
   saveProgress();
   startQuestion(true);
 });
