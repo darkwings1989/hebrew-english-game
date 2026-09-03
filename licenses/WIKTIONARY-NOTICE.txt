@@ -1,0 +1,16 @@
+Wiktionary attribution notice
+
+The optional word-management page queries English Wiktionary through the
+MediaWiki Action API. Hebrew translations selected from Wiktionary may be
+stored in custom-words.js together with their source word.
+
+Source: https://en.wiktionary.org/
+English Wiktionary licensing information:
+https://en.wiktionary.org/wiki/Wiktionary:Copyrights
+
+Wiktionary text is available under the Creative Commons
+Attribution-ShareAlike License and, unless otherwise noted on Wiktionary,
+the GNU Free Documentation License. See the linked Wiktionary page for the
+complete terms, attribution requirements, and license versions that apply.
+
+The game code and Tabler Icons are covered by their own license terms.

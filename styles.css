@@ -386,9 +386,34 @@ button {
   background: color-mix(in srgb, currentColor 10%, white);
 }
 
-.picture-frame img {
+.picture-frame img,
+.picture-frame .word-visual {
   width: 76px;
   height: 76px;
+}
+
+.word-visual {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+}
+
+.color-word-visual {
+  border: 3px solid rgba(16, 42, 86, .22);
+  border-radius: 50%;
+  background: var(--word-visual-color);
+  box-shadow: inset 0 0 0 4px rgba(255, 255, 255, .5);
+}
+
+.number-word-visual {
+  border-radius: 22px;
+  color: white;
+  background: var(--word-visual-color);
+  font-family: "Arial Rounded MT Bold", Arial, sans-serif;
+  font-size: 2.7rem;
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, .18);
 }
 
 .picture-copy {
@@ -532,9 +557,15 @@ button {
   font-size: .95rem;
 }
 
-.image-answer img {
+.image-answer img,
+.image-answer .word-visual {
   width: 56px;
   height: 56px;
+}
+
+.image-answer .number-word-visual {
+  border-radius: 15px;
+  font-size: 2rem;
 }
 
 .spelling-area {
@@ -760,9 +791,14 @@ button:focus-visible {
     border-radius: 25px;
   }
 
-  .picture-frame img {
+  .picture-frame img,
+  .picture-frame .word-visual {
     width: 62px;
     height: 62px;
+  }
+
+  .picture-frame .number-word-visual {
+    font-size: 2.2rem;
   }
 
   .picture-copy strong {

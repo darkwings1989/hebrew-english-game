@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#123b75" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>הוספת מילים למשחק האנגלית</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./admin.css" />
+  </head>
+  <body>
+    <main class="admin-shell">
+      <header class="admin-header">
+        <div class="admin-heading">
+          <span class="admin-mark" aria-hidden="true"><img src="./assets/icons/library/books.svg" alt="" /></span>
+          <div>
+            <p>ניהול אוצר המילים</p>
+            <h1>הוספת מילה למשחק</h1>
+          </div>
+        </div>
+        <a class="game-link" href="./index.html">חזרה למשחק</a>
+      </header>
+
+      <section class="admin-card intro-card">
+        <h2>איך זה עובד?</h2>
+        <ol>
+          <li>מקלידים מילה באנגלית ובודקים אותה במילון החופשי Wiktionary.</li>
+          <li>בוחרים פירוש עברי מאומת, קטגוריה ואייקון חינמי.</li>
+          <li>פותחים בקשה ב־GitHub. התהליך האוטומטי בודק שוב, מוסיף את המילה ומעדכן את האתר.</li>
+        </ol>
+        <p class="owner-note">רק מנהל המאגר צריך להתחבר ל־GitHub. התלמידים ממשיכים להשתמש במשחק ללא חשבון.</p>
+      </section>
+
+      <form id="word-form" class="admin-card word-form" novalidate>
+        <section class="form-section">
+          <span class="step-number">1</span>
+          <div class="section-content">
+            <label for="english-word">המילה באנגלית</label>
+            <div class="inline-control" dir="ltr">
+              <input id="english-word" name="englishWord" type="text" maxlength="40" autocomplete="off" autocapitalize="none" spellcheck="true" placeholder="example: rabbit" required />
+              <button id="check-word" class="primary-button" type="button">בדיקת מילה</button>
+            </div>
+            <p class="field-help">אפשר גם ביטוי קצר, למשל <span dir="ltr">see you</span>.</p>
+            <p id="dictionary-status" class="form-status" role="status"></p>
+          </div>
+        </section>
+
+        <section id="meaning-section" class="form-section" hidden>
+          <span class="step-number">2</span>
+          <div class="section-content">
+            <fieldset>
+              <legend>בחרו פירוש מתאים בעברית</legend>
+              <p class="field-help">מוצגים רק פירושים שנמצאו במילון. אם יש כמה פירושים, בחרו את זה שתרצו ללמד.</p>
+              <div id="meaning-options" class="meaning-options"></div>
+            </fieldset>
+            <label for="vocalized-meaning">הפירוש שיוצג בתרגיל, עם ניקוד</label>
+            <input id="vocalized-meaning" name="vocalizedMeaning" type="text" maxlength="80" dir="rtl" placeholder="לדוגמה: אַרְנָב" required />
+            <p class="field-help">האותיות חייבות להיות זהות לפירוש שנבחר. הניקוד עוזר לילדים לקרוא נכון.</p>
+          </div>
+        </section>
+
+        <section id="details-section" class="form-section" hidden>
+          <span class="step-number">3</span>
+          <div class="section-content details-grid">
+            <div>
+              <label for="category">קטגוריה</label>
+              <select id="category" name="category" required></select>
+            </div>
+            <div>
+              <label for="word-color">צבע האייקון</label>
+              <input id="word-color" name="wordColor" type="color" value="#2563eb" />
+            </div>
+            <div class="icon-picker-field">
+              <label for="icon-search">בחרו אייקון</label>
+              <input id="icon-search" type="search" placeholder="חיפוש, למשל: חיה או ספר" autocomplete="off" />
+              <div id="icon-grid" class="icon-grid" role="radiogroup" aria-label="בחירת אייקון"></div>
+              <p id="selected-icon-label" class="selected-icon-label">עדיין לא נבחר אייקון</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="github-section" class="form-section" hidden>
+          <span class="step-number">4</span>
+          <div class="section-content">
+            <h2>המאגר ב־GitHub</h2>
+            <div class="repo-grid">
+              <div>
+                <label for="repo-owner">שם המשתמש או הארגון</label>
+                <input id="repo-owner" type="text" dir="ltr" autocomplete="off" placeholder="github-user" required />
+              </div>
+              <div>
+                <label for="repo-name">שם המאגר</label>
+                <input id="repo-name" type="text" dir="ltr" autocomplete="off" placeholder="english-game" required />
+              </div>
+            </div>
+            <p class="field-help">באתר שפורסם דרך GitHub Pages השדות מתמלאים אוטומטית. בהפעלה מקומית צריך למלא אותם פעם אחת.</p>
+            <button id="submit-request" class="submit-button" type="submit" disabled>פתיחת בקשת הוספה ב־GitHub</button>
+            <p id="form-error" class="form-error" role="alert" hidden></p>
+          </div>
+        </section>
+      </form>
+
+      <footer class="admin-footer">
+        בדיקת הפירוש נעשית מול Wiktionary. האייקונים הם Tabler Icons ברישיון MIT.
+      </footer>
+    </main>
+
+    <script src="./data.js"></script>
+    <script src="./custom-words.js"></script>
+    <script src="./admin-core.js"></script>
+    <script src="./admin.js"></script>
+  </body>
+</html>

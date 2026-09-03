@@ -1,0 +1,384 @@
+.admin-shell {
+  min-height: 100svh;
+  padding: 28px 18px 40px;
+  background:
+    radial-gradient(circle at 12% 10%, rgba(255, 212, 59, .2), transparent 22%),
+    radial-gradient(circle at 88% 84%, rgba(56, 189, 248, .22), transparent 24%),
+    linear-gradient(145deg, #0d2d5c 0%, #16549a 56%, #117c89 100%);
+}
+
+.admin-header,
+.admin-card,
+.admin-footer {
+  width: min(100%, 940px);
+  margin-inline: auto;
+}
+
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  color: white;
+}
+
+.admin-heading {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 14px;
+}
+
+.admin-heading p,
+.admin-heading h1 {
+  margin: 0;
+}
+
+.admin-heading p {
+  margin-bottom: 3px;
+  color: #d8edff;
+  font-size: .9rem;
+}
+
+.admin-heading h1 {
+  font-size: clamp(1.45rem, 5vw, 2.15rem);
+}
+
+.admin-mark {
+  display: grid;
+  width: 62px;
+  height: 62px;
+  flex: 0 0 62px;
+  place-items: center;
+  border: 2px solid rgba(255,255,255,.55);
+  border-radius: 20px;
+  background: linear-gradient(145deg, #ffd43b, #ff922b);
+}
+
+.admin-mark img {
+  width: 36px;
+  height: 36px;
+}
+
+.game-link {
+  padding: 10px 15px;
+  border: 1px solid rgba(255,255,255,.45);
+  border-radius: 14px;
+  color: white;
+  background: rgba(7,30,70,.42);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.admin-card {
+  margin-top: 20px;
+  padding: 24px;
+  border: 1px solid rgba(255,255,255,.75);
+  border-radius: 28px;
+  background: rgba(255,255,255,.98);
+  box-shadow: 0 20px 55px rgba(7,28,69,.24);
+}
+
+.intro-card h2,
+.section-content h2 {
+  margin: 0 0 10px;
+  font-size: 1.2rem;
+}
+
+.intro-card ol {
+  margin: 0;
+  padding-right: 22px;
+  line-height: 1.75;
+}
+
+.owner-note {
+  margin: 14px 0 0;
+  padding: 11px 14px;
+  border-radius: 14px;
+  color: #0b5f56;
+  background: #e6fcf5;
+  font-weight: 700;
+}
+
+.word-form {
+  padding-block: 8px;
+}
+
+.form-section {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 15px;
+  padding: 22px 0;
+  border-bottom: 1px solid #e1e9f5;
+}
+
+.form-section:last-child {
+  border-bottom: 0;
+}
+
+.step-number {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border-radius: 14px;
+  color: white;
+  background: #2563eb;
+  font-weight: 900;
+}
+
+.section-content {
+  min-width: 0;
+}
+
+label,
+legend {
+  display: block;
+  margin-bottom: 8px;
+  color: #213c69;
+  font-weight: 800;
+}
+
+fieldset {
+  margin: 0 0 19px;
+  padding: 0;
+  border: 0;
+}
+
+input[type="text"],
+input[type="search"],
+select {
+  width: 100%;
+  min-height: 47px;
+  padding: 9px 12px;
+  border: 2px solid #cddbed;
+  border-radius: 13px;
+  color: var(--navy);
+  background: white;
+  font-size: 1rem;
+}
+
+input:focus,
+select:focus,
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid rgba(37,99,235,.3);
+  outline-offset: 2px;
+}
+
+.inline-control {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+}
+
+.primary-button,
+.submit-button {
+  min-height: 47px;
+  padding: 10px 18px;
+  border: 0;
+  border-radius: 13px;
+  color: white;
+  background: #2563eb;
+  box-shadow: 0 4px 0 #1649b8;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.primary-button:disabled,
+.submit-button:disabled {
+  opacity: .55;
+  cursor: wait;
+}
+
+.field-help,
+.form-status,
+.selected-icon-label {
+  margin: 8px 0 0;
+  color: #687998;
+  font-size: .9rem;
+  line-height: 1.55;
+}
+
+.form-status.success {
+  color: #087f5b;
+  font-weight: 700;
+}
+
+.form-status.error,
+.form-error {
+  color: #a61e4d;
+  font-weight: 700;
+}
+
+.meaning-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.meaning-option {
+  position: relative;
+}
+
+.meaning-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.meaning-option span {
+  display: block;
+  padding: 9px 14px;
+  border: 2px solid #cddbed;
+  border-radius: 999px;
+  background: white;
+  cursor: pointer;
+  font-size: 1.05rem;
+}
+
+.meaning-option input:checked + span {
+  border-color: #2563eb;
+  color: #1649b8;
+  background: #eaf1ff;
+  font-weight: 800;
+}
+
+.meaning-option input:focus-visible + span {
+  outline: 3px solid rgba(37,99,235,.3);
+}
+
+.details-grid,
+.repo-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(150px, .45fr);
+  gap: 18px;
+}
+
+input[type="color"] {
+  width: 100%;
+  height: 47px;
+  padding: 4px;
+  border: 2px solid #cddbed;
+  border-radius: 13px;
+  background: white;
+}
+
+.icon-picker-field {
+  grid-column: 1 / -1;
+}
+
+.icon-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 9px;
+  max-height: 315px;
+  margin-top: 11px;
+  overflow-y: auto;
+  padding: 5px;
+}
+
+.icon-choice {
+  display: grid;
+  min-width: 0;
+  min-height: 82px;
+  place-items: center;
+  gap: 3px;
+  padding: 8px 4px;
+  border: 2px solid #d8e4f4;
+  border-radius: 15px;
+  color: #536587;
+  background: white;
+  cursor: pointer;
+  font-size: .72rem;
+}
+
+.icon-choice img {
+  width: 35px;
+  height: 35px;
+}
+
+.icon-choice.selected {
+  border-color: #2563eb;
+  color: #1649b8;
+  background: #eaf1ff;
+  font-weight: 800;
+}
+
+.repo-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-bottom: 16px;
+}
+
+.submit-button {
+  width: 100%;
+  margin-top: 12px;
+  background: #087f5b;
+  box-shadow: 0 4px 0 #075c45;
+}
+
+.form-error {
+  margin: 12px 0 0;
+  padding: 11px 13px;
+  border-radius: 12px;
+  background: #fff0f6;
+  line-height: 1.55;
+}
+
+.admin-footer {
+  padding-top: 20px;
+  color: #d8edff;
+  text-align: center;
+  font-size: .88rem;
+}
+
+@media (max-width: 700px) {
+  .admin-shell {
+    padding: 16px 10px 28px;
+  }
+
+  .admin-header {
+    align-items: flex-start;
+  }
+
+  .admin-heading p {
+    display: none;
+  }
+
+  .admin-mark {
+    width: 50px;
+    height: 50px;
+    flex-basis: 50px;
+    border-radius: 16px;
+  }
+
+  .admin-card {
+    padding: 17px;
+    border-radius: 22px;
+  }
+
+  .word-form {
+    padding-block: 4px;
+  }
+
+  .form-section {
+    grid-template-columns: 34px minmax(0, 1fr);
+    gap: 9px;
+  }
+
+  .step-number {
+    width: 32px;
+    height: 32px;
+    border-radius: 11px;
+  }
+
+  .inline-control,
+  .details-grid,
+  .repo-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .icon-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

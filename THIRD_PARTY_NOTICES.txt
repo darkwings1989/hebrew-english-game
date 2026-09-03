@@ -7,3 +7,11 @@ License: https://github.com/tabler/tabler-icons/blob/main/LICENSE
 
 The complete license text is included at:
 licenses/TABLER-ICONS-LICENSE.txt
+
+Wiktionary
+Word and translation validation in the optional admin page uses data from
+English Wiktionary through the MediaWiki Action API.
+
+Source: https://en.wiktionary.org/
+Licenses: Creative Commons Attribution-ShareAlike 4.0 and GNU Free Documentation License
+Details and attribution notice: licenses/WIKTIONARY-NOTICE.txt

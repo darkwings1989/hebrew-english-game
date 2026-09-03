@@ -1,6 +1,17 @@
 "use strict";
 
-const DATA = window.ENGLISH_GAME_DATA;
+const BASE_DATA = window.ENGLISH_GAME_DATA;
+const CUSTOM_WORDS = Array.isArray(window.ENGLISH_GAME_CUSTOM_WORDS)
+  ? window.ENGLISH_GAME_CUSTOM_WORDS.filter(isValidCustomWord)
+  : [];
+const builtInWords = new Set(BASE_DATA.words.map((item) => item.word.toLowerCase()));
+const DATA = Object.freeze({
+  ...BASE_DATA,
+  words: [
+    ...BASE_DATA.words,
+    ...CUSTOM_WORDS.filter((item) => !builtInWords.has(item.word.toLowerCase())),
+  ],
+});
 const ICON_PATH = "./assets/icons/";
 const STORAGE_KEY = "english-first-quest-progress-v1";
 const STREAKS_SESSION_KEY = "english-first-quest-streaks-v1";
@@ -54,6 +65,25 @@ const state = {
 
 let availableVoices = [];
 let speechRequestId = 0;
+
+function isValidCustomWord(item) {
+  return Boolean(
+    item
+    && typeof item === "object"
+    && typeof item.word === "string"
+    && /^[a-z]+(?:[ '-][a-z]+)*$/.test(item.word)
+    && typeof item.hebrew === "string"
+    && /[א-ת]/.test(item.hebrew)
+    && typeof item.hebrewVocalized === "string"
+    && /[א-ת]/.test(item.hebrewVocalized)
+    && typeof item.icon === "string"
+    && /^library\/[a-z0-9-]+\.svg$/.test(item.icon)
+    && typeof item.color === "string"
+    && /^#[0-9a-f]{6}$/i.test(item.color)
+    && typeof item.category === "string"
+    && /^[a-z-]+$/.test(item.category)
+  );
+}
 
 function loadProgress() {
   const fallback = { stageId: DATA.stages[0].id, score: 0, correctCount: 0 };
@@ -129,6 +159,30 @@ function pick(items) {
 
 function capitalize(word) {
   return word.charAt(0).toUpperCase() + word.slice(1);
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function safeColor(value) {
+  return /^#[0-9a-f]{6}$/i.test(value || "") ? value : "#2563eb";
+}
+
+function renderWordVisual(item) {
+  const accessibleLabel = escapeHtml(item.hebrew);
+  if (item.visualType === "color") {
+    return `<span class="word-visual color-word-visual" style="--word-visual-color:${safeColor(item.visualValue)}" role="img" aria-label="${accessibleLabel}"></span>`;
+  }
+  if (item.visualType === "number") {
+    return `<span class="word-visual number-word-visual" style="--word-visual-color:${safeColor(item.color)}" role="img" aria-label="${accessibleLabel}" dir="ltr">${escapeHtml(item.visualValue)}</span>`;
+  }
+  return `<img src="${ICON_PATH}${escapeHtml(item.icon)}" alt="${accessibleLabel}">`;
 }
 
 function hebrewExerciseWord(item) {
@@ -221,7 +275,7 @@ function createListenWordQuestion() {
 }
 
 function createSpellingQuestion() {
-  const item = pick(DATA.words.filter((word) => word.word.length <= 6));
+  const item = pick(DATA.words.filter((word) => /^[a-z]+$/.test(word.word) && word.word.length <= 6));
   return {
     kind: "spelling",
     promptType: "picture",
@@ -391,12 +445,12 @@ function renderPrompt() {
   const showEnglish = question.revealEnglish || state.complete;
   elements.prompt.innerHTML = `
     <div class="picture-prompt">
-      <div class="picture-frame" style="color:${item.color}">
-        <img src="${ICON_PATH}${item.icon}" alt="${item.hebrew}">
+      <div class="picture-frame" style="color:${safeColor(item.color)}">
+        ${renderWordVisual(item)}
       </div>
       <div class="picture-copy">
-        ${showEnglish ? `<strong dir="ltr">${capitalize(item.word)}</strong>` : ""}
-        <span class="exercise-hebrew">${hebrewExerciseWord(item)}</span>
+        ${showEnglish ? `<strong dir="ltr">${escapeHtml(capitalize(item.word))}</strong>` : ""}
+        <span class="exercise-hebrew">${escapeHtml(hebrewExerciseWord(item))}</span>
       </div>
     </div>`;
 }
@@ -417,7 +471,7 @@ function renderAnswers() {
     button.setAttribute("aria-label", `תשובה ${value}`);
 
     if (state.question.kind === "image-choices") {
-      button.innerHTML = `<img src="${ICON_PATH}${choice.icon}" alt=""><span class="exercise-hebrew">${hebrewExerciseWord(choice)}</span>`;
+      button.innerHTML = `${renderWordVisual(choice)}<span class="exercise-hebrew">${escapeHtml(hebrewExerciseWord(choice))}</span>`;
     } else {
       button.textContent = value;
       button.dir = "ltr";

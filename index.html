@@ -101,9 +101,16 @@
       const dataScript = document.createElement("script");
       dataScript.src = `./data.js?v=${cacheVersion}`;
       dataScript.onload = () => {
-        const gameScript = document.createElement("script");
-        gameScript.src = `./script.js?v=${cacheVersion}`;
-        document.body.append(gameScript);
+        const loadGame = () => {
+          const gameScript = document.createElement("script");
+          gameScript.src = `./script.js?v=${cacheVersion}`;
+          document.body.append(gameScript);
+        };
+        const customWordsScript = document.createElement("script");
+        customWordsScript.src = `./custom-words.js?v=${cacheVersion}`;
+        customWordsScript.onload = loadGame;
+        customWordsScript.onerror = loadGame;
+        document.body.append(customWordsScript);
       };
       document.body.append(dataScript);
     </script>
