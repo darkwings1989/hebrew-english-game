@@ -4,9 +4,10 @@ const DATA = window.ENGLISH_GAME_DATA;
 const ICON_PATH = "./assets/icons/";
 const STORAGE_KEY = "english-first-quest-progress-v1";
 const VOICE_WAIT_MS = 3000;
-const SPEECH_START_DELAY_MS = 220;
-const LETTER_SPEECH_RATE = 0.45;
-const WORD_SPEECH_RATE = 0.72;
+const SPEECH_START_DELAY_MS = 120;
+const SPEECH_RESTART_DELAY_MS = 340;
+const LETTER_SPEECH_RATE = 0.42;
+const WORD_SPEECH_RATE = 0.68;
 
 const elements = {
   score: document.querySelector("#score"),
@@ -20,6 +21,7 @@ const elements = {
   progressTrack: document.querySelector(".progress-track"),
   progressBar: document.querySelector("#progress-bar"),
   instruction: document.querySelector("#instruction"),
+  questionZone: document.querySelector(".question-zone"),
   prompt: document.querySelector("#prompt"),
   sound: document.querySelector("#sound-button"),
   soundLabel: document.querySelector("#sound-label"),
@@ -38,7 +40,7 @@ const savedProgress = loadProgress();
 const state = {
   stageId: DATA.stages.some((stage) => stage.id === savedProgress.stageId) ? savedProgress.stageId : DATA.stages[0].id,
   score: savedProgress.score,
-  streak: savedProgress.streak,
+  streaksByStage: Object.fromEntries(DATA.stages.map((stage) => [stage.id, 0])),
   correctCount: savedProgress.correctCount,
   questionNumber: 1,
   question: null,
@@ -53,14 +55,13 @@ let availableVoices = [];
 let speechRequestId = 0;
 
 function loadProgress() {
-  const fallback = { stageId: DATA.stages[0].id, score: 0, streak: 0, correctCount: 0 };
+  const fallback = { stageId: DATA.stages[0].id, score: 0, correctCount: 0 };
   try {
     const value = JSON.parse(localStorage.getItem(STORAGE_KEY));
     if (!value || typeof value !== "object") return fallback;
     return {
       stageId: typeof value.stageId === "string" ? value.stageId : fallback.stageId,
       score: Number.isFinite(value.score) && value.score >= 0 ? value.score : 0,
-      streak: Number.isFinite(value.streak) && value.streak >= 0 ? value.streak : 0,
       correctCount: Number.isFinite(value.correctCount) && value.correctCount >= 0 ? value.correctCount : 0,
     };
   } catch {
@@ -73,7 +74,6 @@ function saveProgress() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
       stageId: state.stageId,
       score: state.score,
-      streak: state.streak,
       correctCount: state.correctCount,
     }));
   } catch {
@@ -106,6 +106,14 @@ function hebrewExerciseWord(item) {
   return item.hebrewVocalized || item.hebrew;
 }
 
+function currentStreak() {
+  return state.streaksByStage[state.stageId] || 0;
+}
+
+function resetCurrentStreak() {
+  state.streaksByStage[state.stageId] = 0;
+}
+
 function uniqueChoices(correct, pool, total = 4) {
   const values = [correct, ...shuffled(pool.filter((value) => value !== correct))];
   return shuffled([...new Set(values)].slice(0, total));
@@ -117,7 +125,7 @@ function createLetterMatchQuestion() {
     kind: "standard",
     promptType: "letter",
     promptText: letter.upper,
-    speechText: letter.upper,
+    speechText: letter.lower,
     speechType: "letter",
     correct: letter.lower,
     choices: uniqueChoices(letter.lower, DATA.letters.map((item) => item.lower)),
@@ -130,7 +138,7 @@ function createHearLetterQuestion() {
   return {
     kind: "standard",
     promptType: "listen",
-    speechText: letter.upper,
+    speechText: letter.lower,
     speechType: "letter",
     correct: letter.upper,
     choices: uniqueChoices(letter.upper, DATA.letters.map((item) => item.upper)),
@@ -210,7 +218,9 @@ function createQuestion() {
 
 function resetQuestionState() {
   speechRequestId += 1;
-  if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+  if ("speechSynthesis" in window && (window.speechSynthesis.speaking || window.speechSynthesis.pending)) {
+    window.speechSynthesis.cancel();
+  }
   state.wrongAnswers = new Set();
   state.attempts = 0;
   state.complete = false;
@@ -219,28 +229,46 @@ function resetQuestionState() {
   elements.speechStatus.hidden = true;
 }
 
-function startQuestion() {
+function scrollIntoViewIfNeeded(element, block = "center") {
+  window.requestAnimationFrame(() => {
+    const rect = element.getBoundingClientRect();
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+    const edgePadding = 16;
+    const isOutsideViewport = rect.top < edgePadding || rect.bottom > viewportHeight - edgePadding;
+    if (!isOutsideViewport) return;
+
+    const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    element.scrollIntoView({
+      behavior: reduceMotion ? "auto" : "smooth",
+      block,
+      inline: "nearest",
+    });
+  });
+}
+
+function startQuestion(scrollToQuestion = false) {
   resetQuestionState();
   state.question = createQuestion();
   render();
+  if (scrollToQuestion) scrollIntoViewIfNeeded(elements.questionZone, "start");
 }
 
 function nextQuestion() {
   state.questionNumber += 1;
-  startQuestion();
+  startQuestion(true);
 }
 
 function finishCorrect() {
   state.complete = true;
   state.score += state.attempts === 0 ? 10 : 5;
-  state.streak += 1;
+  state.streaksByStage[state.stageId] = currentStreak() + 1;
   state.correctCount += 1;
   saveProgress();
 }
 
 function finishWrong() {
   state.complete = true;
-  state.streak = 0;
+  resetCurrentStreak();
   saveProgress();
 }
 
@@ -252,10 +280,11 @@ function chooseAnswer(value) {
   } else {
     state.attempts += 1;
     state.wrongAnswers.add(value);
-    state.streak = 0;
+    resetCurrentStreak();
     if (state.attempts >= 2) finishWrong();
   }
   render();
+  if (state.complete) scrollIntoViewIfNeeded(elements.next, "center");
 }
 
 function chooseLetter(letter, index) {
@@ -269,7 +298,7 @@ function chooseLetter(letter, index) {
       finishCorrect();
     } else {
       state.attempts += 1;
-      state.streak = 0;
+      resetCurrentStreak();
       if (state.attempts >= 2) {
         finishWrong();
       } else {
@@ -279,6 +308,7 @@ function chooseLetter(letter, index) {
     }
   }
   render();
+  if (state.complete) scrollIntoViewIfNeeded(elements.next, "center");
 }
 
 function eraseLastLetter() {
@@ -303,7 +333,7 @@ function renderStages() {
       state.stageId = stage.id;
       state.questionNumber = 1;
       saveProgress();
-      startQuestion();
+      startQuestion(true);
     });
     elements.stagePicker.append(button);
   });
@@ -434,7 +464,7 @@ function render() {
   const progress = (state.correctCount % 10) * 10;
 
   elements.score.textContent = String(state.score);
-  elements.streak.textContent = String(state.streak);
+  elements.streak.textContent = String(currentStreak());
   elements.stars.textContent = String(Math.floor(state.correctCount / 10));
   elements.stageName.textContent = stage.title;
   elements.questionNumber.textContent = `שאלה ${state.questionNumber}`;
@@ -504,7 +534,8 @@ async function speakEnglish() {
 
   const synth = window.speechSynthesis;
   const requestId = ++speechRequestId;
-  synth.cancel();
+  const restartedActiveSpeech = Boolean(synth.speaking || synth.pending);
+  if (restartedActiveSpeech) synth.cancel();
   elements.speechStatus.textContent = "מחפש קול אנגלי...";
   elements.speechStatus.hidden = false;
 
@@ -541,7 +572,8 @@ async function speakEnglish() {
     elements.speechStatus.hidden = false;
   };
 
-  await new Promise((resolve) => setTimeout(resolve, SPEECH_START_DELAY_MS));
+  const startDelay = restartedActiveSpeech ? SPEECH_RESTART_DELAY_MS : SPEECH_START_DELAY_MS;
+  await new Promise((resolve) => setTimeout(resolve, startDelay));
   if (requestId !== speechRequestId) return;
 
   watchdogId = setTimeout(() => {
@@ -559,11 +591,11 @@ elements.next.addEventListener("click", nextQuestion);
 elements.eraseLetter.addEventListener("click", eraseLastLetter);
 elements.reset.addEventListener("click", () => {
   state.score = 0;
-  state.streak = 0;
+  state.streaksByStage = Object.fromEntries(DATA.stages.map((stage) => [stage.id, 0]));
   state.correctCount = 0;
   state.questionNumber = 1;
   saveProgress();
-  startQuestion();
+  startQuestion(true);
 });
 
 if ("speechSynthesis" in window) {

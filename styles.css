@@ -343,7 +343,12 @@ button {
   display: grid;
   justify-items: center;
   padding: 24px 0 17px;
+  scroll-margin-top: 16px;
   text-align: center;
+}
+
+.next-button {
+  scroll-margin-block: 24px;
 }
 
 .instruction {
