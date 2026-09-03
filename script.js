@@ -4,6 +4,9 @@ const DATA = window.ENGLISH_GAME_DATA;
 const ICON_PATH = "./assets/icons/";
 const STORAGE_KEY = "english-first-quest-progress-v1";
 const VOICE_WAIT_MS = 3000;
+const SPEECH_START_DELAY_MS = 220;
+const LETTER_SPEECH_RATE = 0.5;
+const WORD_SPEECH_RATE = 0.72;
 
 const elements = {
   score: document.querySelector("#score"),
@@ -19,6 +22,7 @@ const elements = {
   instruction: document.querySelector("#instruction"),
   prompt: document.querySelector("#prompt"),
   sound: document.querySelector("#sound-button"),
+  soundLabel: document.querySelector("#sound-label"),
   speechStatus: document.querySelector("#speech-status"),
   answers: document.querySelector("#answers"),
   spellingArea: document.querySelector("#spelling-area"),
@@ -109,7 +113,8 @@ function createLetterMatchQuestion() {
     kind: "standard",
     promptType: "letter",
     promptText: letter.upper,
-    speechText: `Letter ${letter.upper}`,
+    speechText: letter.upper,
+    speechType: "letter",
     correct: letter.lower,
     choices: uniqueChoices(letter.lower, DATA.letters.map((item) => item.lower)),
     explanation: `${letter.upper} ו-${letter.lower} הן אותה אות.`,
@@ -121,7 +126,8 @@ function createHearLetterQuestion() {
   return {
     kind: "standard",
     promptType: "listen",
-    speechText: `Letter ${letter.upper}`,
+    speechText: letter.upper,
+    speechType: "letter",
     correct: letter.upper,
     choices: uniqueChoices(letter.upper, DATA.letters.map((item) => item.upper)),
     explanation: `שמעתם את האות ${letter.upper}.`,
@@ -432,6 +438,9 @@ function render() {
   elements.progressBar.style.width = `${progress}%`;
   elements.progressTrack.setAttribute("aria-valuenow", String(progress));
   elements.instruction.textContent = stage.instruction;
+  const listenFirst = state.stageId === "first-letter";
+  elements.soundLabel.textContent = listenFirst ? "שלב 1: לחצו ושמעו את המילה" : "לשמוע באנגלית";
+  elements.sound.setAttribute("aria-label", listenFirst ? "שלב 1: שמיעת המילה באנגלית" : "השמעה באנגלית");
 
   renderStages();
   renderPrompt();
@@ -508,7 +517,7 @@ async function speakEnglish() {
   let watchdogId;
   utterance.voice = voice;
   utterance.lang = voice.lang;
-  utterance.rate = state.stageId.includes("letter") ? 0.68 : 0.72;
+  utterance.rate = state.question.speechType === "letter" ? LETTER_SPEECH_RATE : WORD_SPEECH_RATE;
   utterance.pitch = 1;
 
   utterance.onstart = () => {
@@ -527,6 +536,9 @@ async function speakEnglish() {
     elements.speechStatus.textContent = "לא ניתן להפעיל כרגע את ההקראה באנגלית";
     elements.speechStatus.hidden = false;
   };
+
+  await new Promise((resolve) => setTimeout(resolve, SPEECH_START_DELAY_MS));
+  if (requestId !== speechRequestId) return;
 
   watchdogId = setTimeout(() => {
     if (started || finished || requestId !== speechRequestId) return;

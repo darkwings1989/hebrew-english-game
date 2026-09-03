@@ -21,7 +21,7 @@ window.ENGLISH_GAME_DATA = Object.freeze({
       title: "אות פותחת",
       shortTitle: "אות ראשונה",
       icon: "sparkles.svg",
-      instruction: "באיזו אות מתחילה המילה?",
+      instruction: "שלב 1: לחצו ושמעו את המילה. שלב 2: בחרו באיזו אות היא מתחילה.",
     },
     {
       id: "picture-word",
