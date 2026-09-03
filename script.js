@@ -5,7 +5,7 @@ const ICON_PATH = "./assets/icons/";
 const STORAGE_KEY = "english-first-quest-progress-v1";
 const VOICE_WAIT_MS = 3000;
 const SPEECH_START_DELAY_MS = 220;
-const LETTER_SPEECH_RATE = 0.5;
+const LETTER_SPEECH_RATE = 0.45;
 const WORD_SPEECH_RATE = 0.72;
 
 const elements = {
@@ -102,6 +102,10 @@ function capitalize(word) {
   return word.charAt(0).toUpperCase() + word.slice(1);
 }
 
+function hebrewExerciseWord(item) {
+  return item.hebrewVocalized || item.hebrew;
+}
+
 function uniqueChoices(correct, pool, total = 4) {
   const values = [correct, ...shuffled(pool.filter((value) => value !== correct))];
   return shuffled([...new Set(values)].slice(0, total));
@@ -145,7 +149,7 @@ function createFirstLetterQuestion() {
     speechText: item.word,
     correct: firstLetter,
     choices: uniqueChoices(firstLetter, DATA.letters.map((letter) => letter.upper)),
-    explanation: `${capitalize(item.word)} מתחילה באות ${firstLetter}. פירוש המילה: ${item.hebrew}.`,
+    explanation: `${capitalize(item.word)} מתחילה באות ${firstLetter}. פירוש המילה: ${hebrewExerciseWord(item)}.`,
   };
 }
 
@@ -159,7 +163,7 @@ function createPictureWordQuestion() {
     speechText: item.word,
     correct: item.word,
     choices: uniqueChoices(item.word, DATA.words.map((word) => word.word)),
-    explanation: `${capitalize(item.word)} פירושה ${item.hebrew}.`,
+    explanation: `${capitalize(item.word)} פירושה ${hebrewExerciseWord(item)}.`,
   };
 }
 
@@ -174,7 +178,7 @@ function createListenWordQuestion() {
     speechText: item.word,
     correct: item.word,
     choices,
-    explanation: `שמעתם את המילה ${capitalize(item.word)}, שפירושה ${item.hebrew}.`,
+    explanation: `שמעתם את המילה ${capitalize(item.word)}, שפירושה ${hebrewExerciseWord(item)}.`,
   };
 }
 
@@ -188,7 +192,7 @@ function createSpellingQuestion() {
     speechText: item.word,
     correct: item.word,
     letters: shuffled(item.word.split("")),
-    explanation: `${capitalize(item.word)} נכתבת כך: ${item.word.toUpperCase()}. פירוש המילה: ${item.hebrew}.`,
+    explanation: `${capitalize(item.word)} נכתבת כך: ${item.word.toUpperCase()}. פירוש המילה: ${hebrewExerciseWord(item)}.`,
   };
 }
 
@@ -328,7 +332,7 @@ function renderPrompt() {
       </div>
       <div class="picture-copy">
         ${showEnglish ? `<strong dir="ltr">${capitalize(item.word)}</strong>` : ""}
-        <span>${item.hebrew}</span>
+        <span class="exercise-hebrew">${hebrewExerciseWord(item)}</span>
       </div>
     </div>`;
 }
@@ -349,7 +353,7 @@ function renderAnswers() {
     button.setAttribute("aria-label", `תשובה ${value}`);
 
     if (state.question.kind === "image-choices") {
-      button.innerHTML = `<img src="${ICON_PATH}${choice.icon}" alt=""><span>${choice.hebrew}</span>`;
+      button.innerHTML = `<img src="${ICON_PATH}${choice.icon}" alt=""><span class="exercise-hebrew">${hebrewExerciseWord(choice)}</span>`;
     } else {
       button.textContent = value;
       button.dir = "ltr";

@@ -411,6 +411,10 @@ button {
   font-size: 1.05rem;
 }
 
+.exercise-hebrew {
+  line-height: 1.65;
+}
+
 .listen-prompt {
   display: grid;
   width: 124px;
