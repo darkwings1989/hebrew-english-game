@@ -14,24 +14,8 @@
 - ניסיון נוסף לאחר טעות, והסבר לאחר תשובה נכונה או שתי טעויות
 - שמירת ניקוד במכשיר ורצף נפרד לכל סוג תרגיל במהלך אותה לשונית
 
-## העלאה ראשונה ל־GitHub Pages
-
-1. צרו מאגר חדש ב־GitHub.
-2. פתחו את המאגר ובחרו `Add file` ואז `Upload files`.
-3. העלו את כל הקבצים והתיקיות שבתיקייה הזאת, כולל התיקיות `.github`,‏ `assets`,‏ `licenses` ו־`tools`.
-4. לחצו `Commit changes`.
-5. עברו אל `Settings`, אחר כך `Pages`.
-6. תחת `Build and deployment`, בשדה `Source`, בחרו `GitHub Actions`.
-7. עברו ללשונית `Actions` והמתינו לסיום הפעולה `Deploy game to GitHub Pages`.
-8. הקישור לאתר יופיע ב־`Settings` ואז `Pages`.
-
-אם GitHub מבקש לאשר כתיבה לפעולות, עברו אל `Settings`,‏ `Actions`,‏ `General`,‏ `Workflow permissions`, ובחרו `Read and write permissions`.
-
-## הוספת מילים בלי לערוך קוד
-
-לאחר פרסום האתר, פתחו את כתובת האתר והוסיפו בסופה `/admin.html`. לדוגמה:
-
-`https://YOUR-NAME.github.io/YOUR-REPOSITORY/admin.html`
+כתובת המשחק: https://darkwings1989.github.io/hebrew-english-game/
+כתובת הכלי להוספת מילים חדשות למאגר המילים: https://darkwings1989.github.io/hebrew-english-game/admin.html
 
 דף הניהול אינו מופיע בתפריטי המשחק. בדף הזה:
 
@@ -41,17 +25,8 @@
 4. לוחצים על הכפתור לפתיחת בקשה ב־GitHub ומאשרים את יצירת ה־Issue.
 5. GitHub Actions בודק שוב את המילה ואת הפירוש, מעדכן את `custom-words.js`, מפרסם את האתר וסוגר את הבקשה.
 
-רק בעל המאגר רשאי להפעיל את ההוספה האוטומטית. אין מפתח או סיסמה בתוך האתר. הילדים אינם צריכים חשבון GitHub ואינם רואים את דף הניהול במהלך המשחק.
-
-## קבצים עיקריים
-
-- `index.html`,‏ `styles.css`,‏ `script.js`: המשחק והממשק
-- `data.js`: המילים המובנות ושלבי המשחק
-- `custom-words.js`: מילים שהתווספו דרך דף הניהול
-- `admin.html`,‏ `admin.css`,‏ `admin.js`: דף הוספת המילים
-- `admin-core.js`: בדיקות משותפות לדף הניהול ול־GitHub Actions
-- `.github/workflows`: פרסום האתר והוספת מילים מאומתות
-- `assets/icons`: אייקונים מקומיים, כך שהמשחק עצמו אינו תלוי בשירות חיצוני
+רק בעל המאגר רשאי להפעיל את ההוספה האוטומטית. אין מפתח או סיסמה בתוך האתר.
+אייקונים מקומיים, כך שהמשחק עצמו אינו תלוי בשירות חיצוני
 
 ## רישיונות ומקורות
 
